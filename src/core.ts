@@ -17,7 +17,7 @@ type NodePropertyInfo = {
     value: null | boolean | number | string | ChildNode[];
 };
 
-export const isValidJson = (json: string): any | false => {
+export const convertJsonIntoObject = (json: string): any => {
     try {
         const o = JSON.parse(json);
         if (o && typeof o === "object") {
@@ -27,9 +27,9 @@ export const isValidJson = (json: string): any | false => {
     return false;
 }
 
-export const extractInsights = (json: string): RootNode => {
+export const extractInsights = (o: any): RootNode => {
     return {
-        children: getChildrenNodes(JSON.parse(json))
+        children: getChildrenNodes(o)
     };
 }
 
