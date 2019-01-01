@@ -1,5 +1,5 @@
-import { ExtensionContext, workspace, TextDocument, window } from 'vscode';
-import { convertJsonIntoObject, extractInsights } from './core';
+import { ExtensionContext, workspace, TextDocument, window, Range, Position } from 'vscode';
+import { convertJsonIntoObject, extractInsights, convertSizeToString, Node } from './core';
 
 /**
  * this method is called when your extension is activated
@@ -20,6 +20,8 @@ export const activate = (_: ExtensionContext) => {
  */
 export const deactivate = () => { }
 
+const decorationType = window.createTextEditorDecorationType({ after: { margin: '0 0 0 1rem' } });
+
 const processActiveFile = async (document: TextDocument) => {
 	const { enable } = workspace.getConfiguration('magic-json');
 
@@ -29,12 +31,35 @@ const processActiveFile = async (document: TextDocument) => {
 
 	if (document && document.languageId === "json") {
 		const text = document.getText();
-		console.log(text);
 
 		const o = convertJsonIntoObject(text);
 		if (!!o) {
 			const insights = extractInsights(o);
-			console.log(insights);
+
+			getEditors(document.fileName).forEach(editor => {
+				editor.setDecorations(
+					decorationType,
+					getDecorations(insights)
+				);
+			});
 		}
 	}
+}
+
+const getEditors = (fileName: string) => {
+	return window.visibleTextEditors.filter(editor => editor.document.fileName === fileName);
+}
+
+const getDecorations = (insights: Node) => {
+	const line = 1;
+	const firstLineDecorationOptions = {
+		renderOptions: {
+			after: {
+				contentText: convertSizeToString(insights.size) + " - " + insights.type,
+			}
+		},
+		range: new Range(new Position(line - 1, 1024), new Position(line - 1, 1024))
+	};
+
+	return [firstLineDecorationOptions];
 }

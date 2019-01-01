@@ -1,20 +1,16 @@
-export type RootNode = {
-    children: ChildNode[];
-};
-
-export type ChildNode = {
-    property: string;
+export type Node = {
+    property?: string | undefined;
     type: string;
     isObject: boolean;
     isArray: boolean;
-    value: null | boolean | number | string | ChildNode[];
+    value: null | boolean | number | string | Node[];
     size: number;
 };
 
 type NodePropertyInfo = {
     isObject: boolean;
     isArray: boolean;
-    value: null | boolean | number | string | ChildNode[];
+    value: null | boolean | number | string | Node[];
 };
 
 export const convertJsonIntoObject = (json: string): any => {
@@ -27,10 +23,29 @@ export const convertJsonIntoObject = (json: string): any => {
     return false;
 }
 
-export const extractInsights = (o: any): RootNode => {
-    return {
-        children: getChildrenNodes(o)
-    };
+export const extractInsights = (o: any): Node => {
+    const childrenNodes = getChildrenNodes(o);
+    const childrenSize = childrenNodes
+        .map(node => node.size)
+        .reduce((a, b) => a + b, 0);
+
+    if (Array.isArray(o)) {
+        return {
+            type: "[]",
+            isObject: false,
+            isArray: true,
+            value: childrenNodes,
+            size: childrenSize
+        };
+    } else {
+        return {
+            type: "{}",
+            isObject: true,
+            isArray: false,
+            value: childrenNodes,
+            size: childrenSize
+        };
+    }
 }
 
 export const convertSizeToString = (size: number): string => {
@@ -38,18 +53,18 @@ export const convertSizeToString = (size: number): string => {
         return '0';
     }
     if (size < 1024) {
-        return size + ' B';
+        return size + 'B';
     }
     if (size < 1024 * 1024) {
-        return (size / 1024).toFixed(2) + ' KB';
+        return (size / 1024).toFixed(2) + 'KB';
     }
     if (size < 1024 * 1024 * 1024) {
-        return (size / 1024 / 1024).toFixed(2) + ' MB';
+        return (size / 1024 / 1024).toFixed(2) + 'MB';
     }
-    return size + ' B';
+    return size + 'B';
 }
 
-const getChildrenNodes = (o: any): ChildNode[] => {
+const getChildrenNodes = (o: any): Node[] => {
     return Object.keys(o).map(key => {
         const {
             isObject,
@@ -98,7 +113,7 @@ const getNodePropertyInfo = (property: any): NodePropertyInfo => {
     }
 }
 
-const getNodeType = (isObject: boolean, isArray: boolean, value: null | boolean | number | string | ChildNode[]): string => {
+const getNodeType = (isObject: boolean, isArray: boolean, value: null | boolean | number | string | Node[]): string => {
     if (value === null) {
         return "null";
     }
@@ -131,7 +146,7 @@ const getNodeType = (isObject: boolean, isArray: boolean, value: null | boolean 
 
 const arrayOrObjectContainerSymbolLength = 2; // '[]' or '{}'
 
-const calculateSize = (property: string, value: null | boolean | number | string | ChildNode[]): number => {
+const calculateSize = (property: string, value: null | boolean | number | string | Node[]): number => {
     if (value === null) {
         return `"${property}": null`.length;
     } else if (
