@@ -707,6 +707,10 @@ json-schema@0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/json-schema/-/json-schema-0.2.3.tgz#b480c892e59a2f05954ce727bd3f2a4e882f9e13"
 
+json-source-map@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/json-source-map/-/json-source-map-0.4.0.tgz#eea837fe3ce2f2bfd5b13687779406354423c355"
+
 json-stable-stringify-without-jsonify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
