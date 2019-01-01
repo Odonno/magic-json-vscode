@@ -83,7 +83,8 @@ const getDecorations = (insights: Node, jsonMapping: any) => {
 		renderOptions: {
 			after: {
 				contentText: convertSizeToString(insights.size) + " - " + insights.type,
-				color: getColor(insights.size, colorMatchLimits)
+				color: getColor(insights.size, colorMatchLimits),
+				fontStyle: "italic"
 			}
 		},
 		range: new Range(new Position(firstLine, 1024), new Position(firstLine, 1024))
@@ -120,7 +121,8 @@ const getDecorations = (insights: Node, jsonMapping: any) => {
 				renderOptions: {
 					after: {
 						contentText: node ? (convertSizeToString(node.size) + " - " + node.type) : "",
-						color: getColor(node ? node.size : undefined, colorMatchLimits)
+						color: getColor(node ? node.size : undefined, colorMatchLimits),
+						fontStyle: "italic"
 					}
 				},
 				range: new Range(new Position(line, 1024), new Position(line, 1024))
