@@ -64,6 +64,38 @@ export const convertSizeToString = (size: number): string => {
     return size + 'B';
 }
 
+export const convertStringToSize = (str: string): number | undefined => {
+    if (!str) {
+        return undefined;
+    }
+
+    const replacedStr = str.toUpperCase().replace(" ", "");
+    const sizeRegexResult = /^[0-9]+/.exec(replacedStr);
+    const unitRegexResult = /[a-zA-Z]+$/.exec(replacedStr);
+
+    const sizeStr = sizeRegexResult === null ? null : sizeRegexResult[0];
+    const unitStr = unitRegexResult === null ? null : unitRegexResult[0];
+
+    if (sizeStr === null) {
+        return undefined;
+    }
+
+    if (unitStr === "B" || unitStr === null) {
+        return parseInt(sizeStr);
+    }
+    if (unitStr === "KB") {
+        return parseInt(sizeStr) * 1024;
+    }
+    if (unitStr === "MB") {
+        return parseInt(sizeStr) * 1024 * 1024;
+    }
+    if (unitStr === "GB") {
+        return parseInt(sizeStr) * 1024 * 1024 * 1024;
+    }
+
+    return undefined;
+}
+
 const getChildrenNodes = (o: any): Node[] => {
     return Object.keys(o).map(key => {
         const {

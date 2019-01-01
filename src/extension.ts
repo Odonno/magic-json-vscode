@@ -1,6 +1,21 @@
-import { ExtensionContext, workspace, TextDocument, window, Range, Position } from 'vscode';
-import { convertJsonIntoObject, extractInsights, convertSizeToString, Node } from './core';
+import { ExtensionContext, workspace, TextDocument, window, Range, Position, WorkspaceConfiguration } from 'vscode';
+import { convertJsonIntoObject, extractInsights, convertSizeToString, Node, convertStringToSize } from './core';
 const jsonMap = require('json-source-map');
+
+type ColorSizeLimit = {
+	from: string;
+	to: string;
+	color: string;
+};
+type ColorMatchLimit = {
+	from: number | undefined;
+	to: number | undefined;
+	color: string;
+};
+type MagicJsonConfiguration = {
+	enable: boolean | undefined;
+	colorSizeLimits: ColorSizeLimit[] | undefined;
+} & WorkspaceConfiguration;
 
 /**
  * this method is called when your extension is activated
@@ -24,7 +39,7 @@ export const deactivate = () => { }
 const decorationType = window.createTextEditorDecorationType({ after: { margin: '0 0 0 1rem' } });
 
 const processActiveFile = async (document: TextDocument) => {
-	const { enable } = workspace.getConfiguration('magic-json');
+	const { enable } = workspace.getConfiguration('magic-json') as MagicJsonConfiguration;
 
 	if (!enable) {
 		return;
@@ -53,12 +68,22 @@ const getEditors = (fileName: string) => {
 }
 
 const getDecorations = (insights: Node, jsonMapping: any) => {
+	const { colorSizeLimits } = workspace.getConfiguration('magic-json') as MagicJsonConfiguration;
+	const colorMatchLimits: ColorMatchLimit[] = !colorSizeLimits ? [] : colorSizeLimits.map(x => {
+		return {
+			from: convertStringToSize(x.from),
+			to: convertStringToSize(x.to),
+			color: x.color
+		}
+	});
+
 	// detect first line of the json content
 	const firstLine = jsonMapping[''].value.line;
 	const firstLineDecorationOptions = {
 		renderOptions: {
 			after: {
 				contentText: convertSizeToString(insights.size) + " - " + insights.type,
+				color: getColor(insights.size, colorMatchLimits)
 			}
 		},
 		range: new Range(new Position(firstLine, 1024), new Position(firstLine, 1024))
@@ -95,6 +120,7 @@ const getDecorations = (insights: Node, jsonMapping: any) => {
 				renderOptions: {
 					after: {
 						contentText: node ? (convertSizeToString(node.size) + " - " + node.type) : "",
+						color: getColor(node ? node.size : undefined, colorMatchLimits)
 					}
 				},
 				range: new Range(new Position(line, 1024), new Position(line, 1024))
@@ -121,4 +147,29 @@ const findNodeByKey = (insights: Node, key: string) => {
 
 	const path = key.split('/').filter((_, i) => i > 0);
 	return findNodeFromPath(insights, path);
+}
+
+const getColor = (size: number | undefined, colorMatchLimits: ColorMatchLimit[]) => {
+	if (size === undefined || !colorMatchLimits || colorMatchLimits.length === 0) {
+		return undefined;
+	}
+
+	const matchLimits = colorMatchLimits.filter(({ from, to }) => {
+		if (from !== undefined && to !== undefined) {
+			return size >= from && size < to;
+		}
+		if (from !== undefined) {
+			return size >= from;
+		}
+		if (to !== undefined) {
+			return size < to;
+		}
+		return false;
+	});
+
+	if (matchLimits.length > 0) {
+		return matchLimits[0].color;
+	}
+
+	return undefined;
 }

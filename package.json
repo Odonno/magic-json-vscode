@@ -21,6 +21,27 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Enable the extension"
+				},
+				"magic-json.colorSizeLimits": {
+					"type": "array",
+					"default": [
+						{
+							"from": "512B",
+							"to": "1KB",
+							"color": "#ffbf00"
+						},
+						{
+							"from": "1KB",
+							"to": "1MB",
+							"color": "#f56a00"
+						},
+						{
+							"from": "1MB",
+							"to": "1GB",
+							"color": "#f04134"
+						}
+					],
+					"description": "Display the text in the specified color if the json object size fall in the specified limits"
 				}
 			}
 		}
