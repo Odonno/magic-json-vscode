@@ -1,4 +1,4 @@
-# magic-json-vscode
+# magic-json
 
 Magic JSON extension provides meaningful insights on JSON files.
 

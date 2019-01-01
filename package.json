@@ -2,7 +2,14 @@
 	"name": "magic-json-vscode",
 	"displayName": "magic-json",
 	"description": "It's a kind of magic",
-	"version": "0.0.1",
+	"homepage": "https://github.com/Odonno/magic-json-vscode/blob/master/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Odonno/magic-json-vscode"
+	},
+	"publisher": "Odonno",
+	"icon": "images/logo.png",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.30.0"
 	},
