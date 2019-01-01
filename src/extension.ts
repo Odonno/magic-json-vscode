@@ -21,6 +21,12 @@ export const activate = (_: ExtensionContext) => {
 export const deactivate = () => { }
 
 const processActiveFile = async (document: TextDocument) => {
+	const { enable } = workspace.getConfiguration('magic-json');
+
+	if (!enable) {
+		return;
+	}
+
 	if (document && document.languageId === "json") {
 		const text = document.getText();
 		console.log(text);
