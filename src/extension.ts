@@ -1,4 +1,4 @@
-import { ExtensionContext, workspace, TextDocument, window, Range, Position } from 'vscode';
+import { ExtensionContext, workspace, TextDocument, window, Range, Position, TextLine } from 'vscode';
 import { convertJsonIntoObject, extractInsights, convertSizeToString, Node } from './core';
 
 /**
@@ -34,32 +34,48 @@ const processActiveFile = async (document: TextDocument) => {
 
 		const o = convertJsonIntoObject(text);
 		if (!!o) {
+			const documentLines = getAllDocumentLines(document);
 			const insights = extractInsights(o);
 
 			getEditors(document.fileName).forEach(editor => {
 				editor.setDecorations(
 					decorationType,
-					getDecorations(insights)
+					getDecorations(documentLines, insights)
 				);
 			});
 		}
 	}
 }
 
+const getAllDocumentLines = (document: TextDocument) => {
+	return [...Array(document.lineCount).keys()].map(i => {
+		return document.lineAt(i);
+	});
+}
+
 const getEditors = (fileName: string) => {
 	return window.visibleTextEditors.filter(editor => editor.document.fileName === fileName);
 }
 
-const getDecorations = (insights: Node) => {
-	const line = 1;
-	const firstLineDecorationOptions = {
-		renderOptions: {
-			after: {
-				contentText: convertSizeToString(insights.size) + " - " + insights.type,
+const getDecorations = (documentLines: TextLine[], insights: Node) => {
+	return documentLines
+		.filter(line => !line.isEmptyOrWhitespace)
+		.map(({ lineNumber }, index) => {
+			// detect first line of the json content
+			if (index === 0) {
+				const firstLineDecorationOptions = {
+					renderOptions: {
+						after: {
+							contentText: convertSizeToString(insights.size) + " - " + insights.type,
+						}
+					},
+					range: new Range(new Position(lineNumber, 1024), new Position(lineNumber, 1024))
+				};
+				return [firstLineDecorationOptions];
 			}
-		},
-		range: new Range(new Position(line - 1, 1024), new Position(line - 1, 1024))
-	};
 
-	return [firstLineDecorationOptions];
+			// TODO : detect & create decorations for children nodes
+			return [];
+		})
+		.reduce((x, y) => x.concat(y));
 }
