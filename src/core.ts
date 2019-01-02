@@ -115,32 +115,32 @@ const getChildrenNodes = (o: any): Node[] => {
     });
 }
 
-const getNodePropertyInfo = (property: any): NodePropertyInfo => {
-    if (property === null) {
+const getNodePropertyInfo = (propertyValue: any): NodePropertyInfo => {
+    if (propertyValue === null) {
         return {
             isObject: false,
             isArray: false,
             value: null
         };
-    } else if (typeof property === "object") {
-        if (Array.isArray(property)) {
+    } else if (typeof propertyValue === "object") {
+        if (Array.isArray(propertyValue)) {
             return {
                 isObject: false,
                 isArray: true,
-                value: getChildrenNodes(property)
+                value: getChildrenNodes(propertyValue)
             };
         } else {
             return {
                 isObject: true,
                 isArray: false,
-                value: getChildrenNodes(property)
+                value: getChildrenNodes(propertyValue)
             };
         }
     } else {
         return {
             isObject: false,
             isArray: false,
-            value: property
+            value: propertyValue
         };
     }
 }
@@ -176,24 +176,35 @@ const getNodeType = (isObject: boolean, isArray: boolean, value: null | boolean 
     return typeof value;
 }
 
-const arrayOrObjectContainerSymbolLength = 2; // '[]' or '{}'
+const arrayOrObjectContainerSymbolLength = '"": '.length; // '[]' or '{}'
+const nullContainerLength = '"": null'.length;
+const numberOrBooleanContainerLength = '"": '.length;
+const stringContainerLength = '"": ""'.length;
+
+const memoLengthList: any = {};
+const withMemoLength = (value: any): number => {
+    if (memoLengthList[value] === undefined) {
+        memoLengthList[value] = value.toString().length;
+    }
+    return memoLengthList[value];
+}
 
 const calculateSize = (property: string, value: null | boolean | number | string | Node[]): number => {
     if (value === null) {
-        return `"${property}": null`.length;
+        return property.length + nullContainerLength;
     } else if (
         typeof value === "number" ||
         typeof value === "boolean") {
-        return `"${property}": ${value.toString()}`.length;
+        return property.length + numberOrBooleanContainerLength + withMemoLength(value);
     } else if (typeof value === "string") {
-        return `"${property}": "${value.toString()}"`.length;
+        return property.length + stringContainerLength + withMemoLength(value);
     } else if (typeof value === "object") {
         if (Array.isArray(value)) {
             const childrenSize = value
                 .map(node => node.size)
                 .reduce((a, b) => a + b, 0);
 
-            return `"${property}": `.length + arrayOrObjectContainerSymbolLength + childrenSize;
+            return property.length + arrayOrObjectContainerSymbolLength + childrenSize;
         }
     }
 
