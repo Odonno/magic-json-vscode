@@ -2,6 +2,12 @@ import { ExtensionContext, workspace, TextDocument, window, Range, Position, Wor
 import { convertJsonIntoObject, extractInsights, convertSizeToString, Node, convertStringToSize } from './core';
 const jsonMap = require('json-source-map');
 
+enum TypeOs {
+	WINDOWS = "win32",
+	LINUX = "linux",
+	MAC = "darwin"
+}
+
 type ColorSizeLimit = {
 	from: string;
 	to: string;
@@ -15,6 +21,7 @@ type ColorMatchLimit = {
 type MagicJsonConfiguration = {
 	enable: boolean | undefined;
 	colorSizeLimits: ColorSizeLimit[] | undefined;
+	ignoreFiles: string[];
 } & WorkspaceConfiguration;
 
 /**
@@ -39,9 +46,12 @@ export const deactivate = () => { }
 const decorationType = window.createTextEditorDecorationType({ after: { margin: '0 0 0 1rem' } });
 
 const processActiveFile = async (document: TextDocument) => {
-	const { enable } = workspace.getConfiguration('magic-json') as MagicJsonConfiguration;
+	const { enable, ignoreFiles } = workspace.getConfiguration('magic-json') as MagicJsonConfiguration;
+	const platform = process.platform;
+	const separator = platform === TypeOs.WINDOWS ? '\\' : '/';
+	const currentFilename = document.fileName.split(separator).slice(-1)[0];
 
-	if (!enable) {
+	if (!enable || (ignoreFiles && ignoreFiles.includes(currentFilename))) {
 		return;
 	}
 

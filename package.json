@@ -9,7 +9,7 @@
 	},
 	"publisher": "Odonno",
 	"icon": "images/logo.png",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"engines": {
 		"vscode": "^1.30.0"
 	},
@@ -22,12 +22,17 @@
 	"main": "./out/extension.js",
 	"contributes": {
 		"configuration": {
-			"title": "magic-json configuration",
+			"title": "Magic JSON",
 			"properties": {
 				"magic-json.enable": {
 					"type": "boolean",
 					"default": true,
 					"description": "Enable the extension"
+				},
+				"magic-json.ignoreFiles": {
+					"type": "array",
+					"default": [],
+					"description": "Desactivate the extension for the specified files"
 				},
 				"magic-json.colorSizeLimits": {
 					"type": "array",
@@ -65,7 +70,7 @@
 		"@types/node": "^8.10.25",
 		"tslint": "^5.8.0",
 		"typescript": "^3.1.4",
-		"vscode": "^1.1.25"
+		"vscode": "^1.1.37"
 	},
 	"dependencies": {
 		"json-source-map": "^0.4.0"
