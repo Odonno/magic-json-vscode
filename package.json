@@ -1,79 +1,78 @@
 {
-	"name": "magic-json-vscode",
-	"displayName": "magic-json",
-	"description": "It's a kind of magic",
-	"homepage": "https://github.com/Odonno/magic-json-vscode/blob/master/README.md",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Odonno/magic-json-vscode"
-	},
-	"publisher": "Odonno",
-	"icon": "images/logo.png",
-	"version": "1.0.2",
-	"engines": {
-		"vscode": "^1.30.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"*"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"configuration": {
-			"title": "Magic JSON",
-			"properties": {
-				"magic-json.enable": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enable the extension"
-				},
-				"magic-json.ignoreFiles": {
-					"type": "array",
-					"default": [],
-					"description": "Desactivate the extension for the specified files"
-				},
-				"magic-json.colorSizeLimits": {
-					"type": "array",
-					"default": [
-						{
-							"from": "512B",
-							"to": "1KB",
-							"color": "#ffbf00"
-						},
-						{
-							"from": "1KB",
-							"to": "1MB",
-							"color": "#f56a00"
-						},
-						{
-							"from": "1MB",
-							"to": "1GB",
-							"color": "#f04134"
-						}
-					],
-					"description": "Display the text in the specified color if the json object size fall in the specified limits"
-				}
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "yarn run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "yarn run compile && node ./node_modules/vscode/bin/test"
-	},
-	"devDependencies": {
-		"@types/mocha": "^2.2.42",
-		"@types/node": "^8.10.25",
-		"tslint": "^5.8.0",
-		"typescript": "^3.1.4",
-		"vscode": "^1.1.37"
-	},
-	"dependencies": {
-		"json-source-map": "^0.4.0",
-		"micromatch": "^4.0.7"
-	}
+  "name": "magic-json-vscode",
+  "displayName": "magic-json",
+  "description": "It's a kind of magic",
+  "homepage": "https://github.com/Odonno/magic-json-vscode/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Odonno/magic-json-vscode"
+  },
+  "publisher": "Odonno",
+  "icon": "images/logo.png",
+  "version": "1.0.2",
+  "engines": {
+    "vscode": "^1.30.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Magic JSON",
+      "properties": {
+        "magic-json.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the extension"
+        },
+        "magic-json.ignoreFiles": {
+          "type": "array",
+          "default": [],
+          "description": "Desactivate the extension for the specified files"
+        },
+        "magic-json.colorSizeLimits": {
+          "type": "array",
+          "default": [
+            {
+              "from": "512B",
+              "to": "1KB",
+              "color": "#ffbf00"
+            },
+            {
+              "from": "1KB",
+              "to": "1MB",
+              "color": "#f56a00"
+            },
+            {
+              "from": "1MB",
+              "to": "1GB",
+              "color": "#f04134"
+            }
+          ],
+          "description": "Display the text in the specified color if the json object size fall in the specified limits"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "bun run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "bun run compile && node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.42",
+    "@types/node": "^8.10.25",
+    "tslint": "^5.8.0",
+    "typescript": "^3.1.4",
+    "vscode": "^1.1.37"
+  },
+  "dependencies": {
+    "json-source-map": "^0.4.0",
+    "micromatch": "^4.0.7"
+  }
 }
