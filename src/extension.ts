@@ -1,6 +1,7 @@
 import { ExtensionContext, workspace, TextDocument, window, Range, Position, WorkspaceConfiguration } from 'vscode';
 import { convertJsonIntoObject, extractInsights, convertSizeToString, Node, convertStringToSize } from './core';
 const jsonMap = require('json-source-map');
+const micromatch = require('micromatch');
 
 type ColorSizeLimit = {
 	from: string;
@@ -15,6 +16,7 @@ type ColorMatchLimit = {
 type MagicJsonConfiguration = {
 	enable: boolean | undefined;
 	colorSizeLimits: ColorSizeLimit[] | undefined;
+	ignoreFiles: string[];
 } & WorkspaceConfiguration;
 
 /**
@@ -39,9 +41,10 @@ export const deactivate = () => { }
 const decorationType = window.createTextEditorDecorationType({ after: { margin: '0 0 0 1rem' } });
 
 const processActiveFile = async (document: TextDocument) => {
-	const { enable } = workspace.getConfiguration('magic-json') as MagicJsonConfiguration;
+	const { enable, ignoreFiles } = workspace.getConfiguration('magic-json') as MagicJsonConfiguration;
+	const isMatch = ignoreFiles && micromatch.contains(document.fileName, ignoreFiles);
 
-	if (!enable) {
+	if (!enable || isMatch) {
 		return;
 	}
 
