@@ -9,7 +9,7 @@
   },
   "publisher": "Odonno",
   "icon": "images/logo.png",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "engines": {
     "vscode": "^1.30.0"
   },
@@ -21,6 +21,22 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+	"commands": [
+		{
+		"command": "magic-json.toggle",
+		"title": "Magic-Json",
+		"icon":"$(bracket-dot)"
+		}
+	],
+	"menus": {
+		"editor/title": [
+			{
+			"when": "resourceLangId == json",
+			"command": "magic-json.toggle",
+			"group": "navigation"
+			}
+		]
+	},
     "configuration": {
       "title": "Magic JSON",
       "properties": {
